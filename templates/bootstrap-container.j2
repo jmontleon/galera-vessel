@@ -1,0 +1,27 @@
+version: "2"
+services:
+  mariadb-bootstrap:
+    image: centos:7
+    restart: OnFailure
+    entrypoint: [/usr/bin/entrypoint.sh]
+    working_dir: /
+    user: mysql
+    command: [/usr/bin/dumb-init, mysqld_safe]
+    environment:
+    - MARIADB_DATABASE=mysql
+    - MARIADB_USERNAME=admin
+    - MARIADB_PASSWORD=foo
+    - MARIADB_ROOT_PASSWORD=sesame
+    volumes:
+    - mariadb1-data:/var/lib/mysql:rw
+    volumes:
+    - mariadb1-data:/var/lib/mysql:rw
+    options:
+      openshift:
+        persistent_volume_claims:
+        - volume_name: mariadb1-data
+          claim_name: mariadb1-data
+          access_modes:
+          - ReadWriteOnce
+volumes:
+  mariadb1-data: {}

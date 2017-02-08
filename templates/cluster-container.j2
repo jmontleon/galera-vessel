@@ -1,0 +1,33 @@
+version: "2"
+services:
+{% for i in range (1,containers+1) %}
+  mariadb-{{ i }}:
+    image: centos:7
+    entrypoint: [/usr/bin/entrypoint.sh]
+    working_dir: /
+    user: mysql
+    command: [/usr/bin/dumb-init, mysqld]
+    environment:
+    - MARIADB_DATABASE=mysql
+    - MARIADB_USERNAME=admin
+    - MARIADB_PASSWORD=foo
+    - MARIADB_ROOT_PASSWORD=sesame
+    expose:
+    - 3306
+    - 4567
+    - 4444
+    - 4568
+    volumes:
+    - mariadb{{ i }}-data:/var/lib/mysql:rw
+    options:
+      openshift:
+        persistent_volume_claims:
+        - volume_name: mariadb{{ i }}-data
+          claim_name: mariadb{{ i }}-data
+          access_modes:
+          - ReadWriteOnce
+{% endfor %}
+volumes:
+{% for i in range (1,containers+1) %}
+  mariadb{{ i }}-data: {}
+{% endfor %}

@@ -1,25 +1,54 @@
 ---
 - hosts: localhost
-  vars:
-    containers: "{{ lookup('env','CLUSTER_SIZE') }}"
   tasks:
-    - name: delete directory for ansible-container
+    #boostrap database
+    - name: delete directory for bootstrap ansible-container
+      file: path=/tmp/galera-bootstrap state=absent
+
+    - name: create directory for boostrap ansible-containers
+      file: path=/tmp/galera-bootstrap state=directory
+
+    - name: init boostrap ansible-container
+      shell: "ansible-container init"
+      args:
+        chdir: /tmp/galera-bootstrap
+
+    - name: write container.yml for boostrap ansible-container
+      template: src=templates/bootstrap-container.j2 dest=/tmp/galera-bootstrap/ansible/container.yml
+
+    - name: write main.yml for bootstrap ansible-container
+      template: src=templates/main.j2 dest=/tmp/galera-bootstrap/ansible/main.yml
+    
+    - name: write requirements.yml for boostrap ansible-container
+      template: src=templates/requirements.j2 dest=/tmp/galera-bootstrap/ansible/requirements.yml
+
+    - name: build bootstrap ansible-container
+      shell: "ansible-container build"
+      args:
+        chdir: /tmp/galera-bootstrap
+
+    #deploy cluster
+    - name: delete directory for cluster ansible-container
       file: path=/tmp/galera state=absent
 
-    - name: create directory for ansible-container
+    - name: create directory for cluster ansible-container
       file: path=/tmp/galera state=directory
 
-    - name: init ansible-container
-      shell: "cd /tmp/galera && ansible-container init"
+    - name: init cluster ansible-container
+      shell: "ansible-container init"
+      args:
+        chdir: /tmp/galera
 
-    - name: write container.yml for ansible-container app {{ containers }} host cluster
-      template: src=templates/container.j2 dest=/tmp/galera/ansible/container.yml
+    - name: write container.yml for cluster ansible-container with {{ containers }} containers
+      template: src=templates/cluster-container.j2 dest=/tmp/galera/ansible/container.yml
 
-    - name: write main.yml for ansible-container app
+    - name: write main.yml for cluster ansible-container
       template: src=templates/main.j2 dest=/tmp/galera/ansible/main.yml
     
-    - name: write requirements.yml for ansible-container app
+    - name: write requirements.yml for cluster ansible-container
       template: src=templates/requirements.j2 dest=/tmp/galera/ansible/requirements.yml
 
-    - name: build ansible-container
-      shell: "cd /tmp/galera && ansible-container build"
+    - name: build cluster ansible-container
+      shell: "ansible-container build"
+      args:
+        chdir: /tmp/galera
