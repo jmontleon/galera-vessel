@@ -12,14 +12,14 @@ To run from within a vessel container:
 
 ## TODO:
 * Fix the my.cnf configuration for each of the boostrap and cluster hosts
-* Do the current boostrap build work in the deploy-cluster playbook
+* Do the existing boostrap build work in the deploy-cluster playbook
 * deploy the boostrap container
 * wait for it to finish
-* Do the current build work in the deploy-cluster playbook
+* Do the existing build work in the deploy-cluster playbook
 * Deploy the cluster
 
 Full process in theory would be:
-* deploy the vesssel using ansible-container.
+* deploy the vessel using ansible-container.
 * invoke the vessel with parameters like '{"task":"deploy", "containers":3}'
 * it builds the bootstrap container and bootstraps the db
 * waits until the bootstrap process is done
