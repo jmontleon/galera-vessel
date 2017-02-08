@@ -4,9 +4,8 @@ export TASK=deploy-cluster
 export CLUSTER_SIZE=3
 ansible-playbook vessel.yml
 
-## TODO:
 * Currently only goes as far as building misconfigured bootstrap and cluster containers
-* run the boostrap container
+## TODO:
 * Fix the my.cnf configuration for each of the boostrap and cluster hosts
 * Do the current boostrap build work in the deploy-cluster playbook
 * deploy the boostrap container
