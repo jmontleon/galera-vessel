@@ -8,7 +8,7 @@ ansible-playbook vessel.yml
 
 To run from within a vessel container:
 * docker build vessel
-* docker run -e TASK=deploy-cluster -e CLUSTER_SIZE=3 -v /var/run/docker.sock:/var/run/docker.sock --privileged build-id
+* docker run -e TASK=deploy-cluster -e CLUSTER_SIZE=3 -v /var/run/docker.sock:/var/run/docker.sock --privileged id
 
 ## TODO:
 * Fix the my.cnf configuration for each of the boostrap and cluster hosts
