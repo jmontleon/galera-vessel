@@ -27,6 +27,17 @@
       args:
         chdir: /tmp/galera-bootstrap
 
+    - name: ship bootstrap ansible-container
+      shell: "ansible-container shipit openshift --local-images"
+      args:
+        chdir: /tmp/bootstrap-galera
+
+#    - name: play bootstrap ansible-container
+#      shell: "ansible-playbook ansible/shipit-openshift.yml"
+#      args:
+#        chdir: /tmp/bootstrapgalera
+
+
     #deploy cluster
     - name: delete directory for cluster ansible-container
       file: path=/tmp/galera state=absent
@@ -43,7 +54,7 @@
       template: src=templates/cluster-container.j2 dest=/tmp/galera/ansible/container.yml
 
     - name: write main.yml for cluster ansible-container
-      template: src=templates/main.j2 dest=/tmp/galera/ansible/main.yml
+      template: src=templates/cluster-main.j2 dest=/tmp/galera/ansible/main.yml
     
     - name: write requirements.yml for cluster ansible-container
       template: src=templates/requirements.j2 dest=/tmp/galera/ansible/requirements.yml
@@ -52,3 +63,13 @@
       shell: "ansible-container build"
       args:
         chdir: /tmp/galera
+
+    - name: ship cluster ansible-container
+      shell: "ansible-container shipit openshift --local-images"
+      args:
+        chdir: /tmp/galera
+
+#    - name: play cluster ansible-container
+#      shell: "ansible-playbook ansible/shipit-openshift.yml"
+#      args:
+#        chdir: /tmp/galera
