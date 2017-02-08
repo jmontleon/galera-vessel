@@ -30,7 +30,7 @@
     - name: ship bootstrap ansible-container
       shell: "ansible-container shipit openshift --local-images"
       args:
-        chdir: /tmp/bootstrap-galera
+        chdir: /tmp/galera-bootstrap
 
 #    - name: play bootstrap ansible-container
 #      shell: "ansible-playbook ansible/shipit-openshift.yml"
