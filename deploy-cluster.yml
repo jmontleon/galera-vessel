@@ -1,0 +1,23 @@
+---
+- hosts: localhost
+  tasks:
+   - name: delete directory for ansible-container
+     file: path=/tmp/galera state=absent
+
+   - name: create directory for ansible-container
+     file: path=/tmp/galera state=directory
+
+   - name: init ansible-container
+     shell: "cd /tmp/galera && ansible-container init"
+
+   - name: write container.yml for ansible-container app
+     template: src=templates/container.j2 dest=/tmp/galera/ansible/container.yml
+
+   - name: write main.yml for ansible-container app
+     template: src=templates/main.j2 dest=/tmp/galera/ansible/main.yml
+    
+   - name: write requirements.yml for ansible-container app
+     template: src=templates/requirements.j2 dest=/tmp/galera/ansible/requirements.yml
+
+   - name: build ansible-container
+     shell: "cd /tmp/galera && ansible-container build"
