@@ -7,3 +7,11 @@
    - name: run {{ task }} with {{ containers }} containers
      command: ansible-playbook "{{ task }}.yml" "-e" '{"containers"{{':'}} {{ containers }} }'
      when: task == "deploy-cluster"
+
+#   - name: run {{ task }} {{ containers }} containers
+#     command: ansible-playbook "{{ task }}.yml" "-e" '{"containers"{{':'}} {{ containers }} }'
+#     when: task == "add"
+#
+#   - name: run {{ task }} cluster
+#     command: ansible-playbook "{{ task }}.yml"
+#     when: task == "heal"
