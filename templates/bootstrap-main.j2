@@ -7,5 +7,10 @@
 #---
 - hosts: mariadb-*
   gather_facts: false
+  vars:
+  vars:
+    mariadb_root_password: sesame
+    wsrep_cluster_addresses: ""
+    wsrep_node_name: mariadb-1
   roles:
    - jmontleon.mariadb-container
