@@ -1,8 +1,6 @@
 ## Invocation
 
-export TASK=deploy-cluster
-export CLUSTER_SIZE=3
-ansible-playbook vessel.yml
+export TASK=deploy-cluster && export CLUSTER_SIZE=3 && ansible-playbook vessel.yml
 
 * Currently only goes as far as building misconfigured bootstrap and cluster containers
 
@@ -11,7 +9,7 @@ To run from within a vessel container:
 * docker run -e TASK=deploy-cluster -e CLUSTER_SIZE=3 -v /var/run/docker.sock:/var/run/docker.sock --privileged id
 
 ## TODO:
-* Fix the my.cnf configuration for each of the boostrap and cluster hosts
+* Fix the my.cnf configuration for each boostrap 
 * Do the existing boostrap build work in the deploy-cluster playbook
 * deploy the boostrap container
 * wait for it to finish
