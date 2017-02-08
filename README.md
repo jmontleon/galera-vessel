@@ -1,6 +1,8 @@
 ## Invocation
 
-ansible-playbook  deploy-cluster.yml -e '{"containers":3}'
+export TASK=deploy-cluster
+export CLUSTER_SIZE=3
+ansible-playbook vessel.yml
 
 ## TODO:
 * Currently only goes as far as building three misconfigured containers

@@ -1,0 +1,9 @@
+---
+- hosts: localhost
+  vars:
+    task: "{{ lookup('env','TASK') }}"
+    containers: "{{ lookup('env','CLUSTER_SIZE') }}"
+  tasks:
+   - name: run {{ task }} with {{ containers }} containers
+     command: ansible-playbook "{{ task }}.yml" "-e" '{"containers"{{':'}} {{ containers }} }'
+     when: task == "deploy-cluster"
