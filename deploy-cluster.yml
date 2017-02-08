@@ -17,7 +17,7 @@
       template: src=templates/bootstrap-container.j2 dest=/tmp/galera-bootstrap/ansible/container.yml
 
     - name: write main.yml for bootstrap ansible-container
-      template: src=templates/main.j2 dest=/tmp/galera-bootstrap/ansible/main.yml
+      template: src=templates/bootstrap-main.j2 dest=/tmp/galera-bootstrap/ansible/main.yml
     
     - name: write requirements.yml for boostrap ansible-container
       template: src=templates/requirements.j2 dest=/tmp/galera-bootstrap/ansible/requirements.yml
