@@ -20,4 +20,3 @@ RUN git clone http://github.com/jmontleon/vessel-scratch /vessel \
    
 
 CMD ["/usr/bin/ansible-playbook", "/vessel/vessel.yml"]
-
