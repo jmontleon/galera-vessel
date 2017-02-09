@@ -1,14 +1,12 @@
 version: "2"
 services:
 {% for i in range (1,containers+1) %}
+{% if i != 1 or task != "grow-cluster" %}
   mariadb-{{ i }}:
     image: centos:7
-    entrypoint: [/usr/bin/entrypoint.sh]
     working_dir: /
     user: mysql
-{% if heal_node is not defined and i == 1 %}
-    command: [/usr/bin/dumb-init, mysqld_safe, --wsrep-new-cluster]
-{% elif heal_node is defined and i == heal_node %}
+{% if task == "deploy-cluster" and i == 1 %}
     command: [/usr/bin/dumb-init, mysqld_safe, --wsrep-new-cluster]
 {% else %}
     command: [/usr/bin/dumb-init, mysqld_safe]
@@ -32,8 +30,7 @@ services:
           claim_name: mariadb{{ i }}-data
           access_modes:
           - ReadWriteOnce
-    {% if i != 1 %}depends_on: [mariadb-1]{% endif %}
-
+{% endif %}
 {% endfor %}
 volumes:
 {% for i in range (1,containers+1) %}
