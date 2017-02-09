@@ -32,6 +32,9 @@
       args:
         chdir: /tmp/galera
 
+    - name: login
+      shell: "oc login https://10.1.2.2:8443 --token={{ token }} --insecure-skip-tls-verify=true"
+
     - name: play bootstrap ansible-container
       shell: "ansible-playbook ansible/shipit-openshift.yml"
       args:
