@@ -39,7 +39,7 @@
 
     #TODO: how do we run a container and let it exit and go away so we don't have to do this
     - name: delete bootstrap dc
-      shell: "sleep 120 && oc --user=admin --token={{TOKEN}} --server=https://10.1.2.2:8443 -n galera delete dc mariadb-bootstrap"
+      shell: "sleep 120 && oc --user=admin --token={{ token }} --server=https://10.1.2.2:8443 -n galera delete dc mariadb-bootstrap"
 
     #deploy cluster
     - name: delete directory for cluster ansible-container

@@ -6,9 +6,9 @@ services:
     entrypoint: [/usr/bin/entrypoint.sh]
     working_dir: /
     user: mysql
-{% if i == 1 and not heal_node %}
+{% if heal_node is not defined and i == 1 %}
     command: [/usr/bin/dumb-init, mysqld_safe, --wsrep-new-cluster]
-{% elif i == heal_node %}
+{% elif heal_node is defined and i == heal_node %}
     command: [/usr/bin/dumb-init, mysqld_safe, --wsrep-new-cluster]
 {% else %}
     command: [/usr/bin/dumb-init, mysqld_safe]

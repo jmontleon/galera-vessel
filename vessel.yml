@@ -3,13 +3,14 @@
   vars:
     task: "{{ lookup('env','TASK') }}"
     containers: "{{ lookup('env','CLUSTER_SIZE') }}"
+    token: "{{ lookup('env','TOKEN') }}"
   tasks:
    - name: run {{ task }} with {{ containers }} containers
-     command: ansible-playbook "{{ task }}.yml" "-e" '{"containers"{{':'}} {{ containers }} }'
+     command: ansible-playbook "{{ task }}.yml" "-e" '{"containers"{{':'}} {{ containers }} }' "-e" '{"token"{{':'}} {{ token }}  }'
      when: task == "deploy-cluster"
 
    - name: run {{ task }} to {{ containers }} containers
-     command: ansible-playbook "{{ task }}.yml" "-e" '{"containers"{{':'}} {{ containers }} }'
+     command: ansible-playbook "{{ task }}.yml" "-e" '{"containers"{{':'}} {{ containers }} }' "-e" '{"token"{{':'}} {{ token }}  }'
      when: task == "grow-cluster"
 #
 #   - name: run {{ task }} cluster
