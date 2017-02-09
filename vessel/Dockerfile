@@ -18,5 +18,4 @@ RUN git clone http://github.com/jmontleon/vessel-scratch /vessel \
     && pip install --upgrade setuptools \
     && python ./setup.py install
    
-
 CMD ["/usr/bin/ansible-playbook", "/vessel/vessel.yml"]

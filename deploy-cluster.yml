@@ -60,7 +60,7 @@
       template: src=templates/cluster-container.j2 dest=/tmp/deploy/galera/ansible/container.yml
 
     - name: write main.yml for cluster ansible-container
-      template: src=templates/cluster-main.j2 dest=/tmp/galera/ansible/main.yml
+      template: src=templates/cluster-main.j2 dest=/tmp/deploy/galera/ansible/main.yml
     
     - name: write requirements.yml for cluster ansible-container
       template: src=templates/requirements.j2 dest=/tmp/deploy/galera/ansible/requirements.yml
