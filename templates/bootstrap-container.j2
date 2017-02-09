@@ -14,8 +14,6 @@ services:
     - MARIADB_ROOT_PASSWORD=sesame
     volumes:
     - mariadb1-data:/var/lib/mysql:rw
-    volumes:
-    - mariadb1-data:/var/lib/mysql:rw
     options:
       openshift:
         persistent_volume_claims:
