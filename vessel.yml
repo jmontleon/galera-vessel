@@ -8,9 +8,9 @@
      command: ansible-playbook "{{ task }}.yml" "-e" '{"containers"{{':'}} {{ containers }} }'
      when: task == "deploy-cluster"
 
-#   - name: run {{ task }} {{ containers }} containers
-#     command: ansible-playbook "{{ task }}.yml" "-e" '{"containers"{{':'}} {{ containers }} }'
-#     when: task == "add"
+   - name: run {{ task }} to {{ containers }} containers
+     command: ansible-playbook "{{ task }}.yml" "-e" '{"containers"{{':'}} {{ containers }} }'
+     when: task == "grow-cluster"
 #
 #   - name: run {{ task }} cluster
 #     command: ansible-playbook "{{ task }}.yml"

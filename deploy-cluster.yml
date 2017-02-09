@@ -3,40 +3,43 @@
   tasks:
     #boostrap database
     - name: delete directory for bootstrap ansible-container
-      file: path=/tmp/galera-bootstrap state=absent
+      file: path=/tmp/galera state=absent
 
     - name: create directory for boostrap ansible-containers
-      file: path=/tmp/galera-bootstrap state=directory
+      file: path=/tmp/galera state=directory
 
     - name: init boostrap ansible-container
       shell: "ansible-container init"
       args:
-        chdir: /tmp/galera-bootstrap
+        chdir: /tmp/galera
 
     - name: write container.yml for boostrap ansible-container
-      template: src=templates/bootstrap-container.j2 dest=/tmp/galera-bootstrap/ansible/container.yml
+      template: src=templates/bootstrap-container.j2 dest=/tmp/galera/ansible/container.yml
 
     - name: write main.yml for bootstrap ansible-container
-      template: src=templates/bootstrap-main.j2 dest=/tmp/galera-bootstrap/ansible/main.yml
+      template: src=templates/bootstrap-main.j2 dest=/tmp/galera/ansible/main.yml
     
     - name: write requirements.yml for boostrap ansible-container
-      template: src=templates/requirements.j2 dest=/tmp/galera-bootstrap/ansible/requirements.yml
+      template: src=templates/requirements.j2 dest=/tmp/galera/ansible/requirements.yml
 
     - name: build bootstrap ansible-container
       shell: "ansible-container build"
       args:
-        chdir: /tmp/galera-bootstrap
+        chdir: /tmp/galera
 
     - name: ship bootstrap ansible-container
       shell: "ansible-container shipit openshift --local-images"
       args:
-        chdir: /tmp/galera-bootstrap
+        chdir: /tmp/galera
 
-#    - name: play bootstrap ansible-container
-#      shell: "ansible-playbook ansible/shipit-openshift.yml"
-#      args:
-#        chdir: /tmp/bootstrapgalera
+    - name: play bootstrap ansible-container
+      shell: "ansible-playbook ansible/shipit-openshift.yml"
+      args:
+        chdir: /tmp/galera
 
+    #TODO: how do we run a container and let it exit and go away so we don't have to do this
+    - name: delete bootstrap dc
+      shell: "sleep 120 && oc --user=admin --token={{TOKEN}} --server=https://10.1.2.2:8443 -n galera delete dc mariadb-bootstrap"
 
     #deploy cluster
     - name: delete directory for cluster ansible-container
@@ -69,7 +72,7 @@
       args:
         chdir: /tmp/galera
 
-#    - name: play cluster ansible-container
-#      shell: "ansible-playbook ansible/shipit-openshift.yml"
-#      args:
-#        chdir: /tmp/galera
+    - name: play cluster ansible-container
+      shell: "ansible-playbook ansible/shipit-openshift.yml"
+      args:
+        chdir: /tmp/galera

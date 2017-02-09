@@ -1,7 +1,7 @@
 FROM centos:latest
 MAINTAINER Vessel Maintainers
 
-RUN yum install -y epel-release
+RUN yum install -y epel-release centos-release-openshift-origin
 RUN yum install -y ansible \
                    git \
                    python-devel \
@@ -9,7 +9,8 @@ RUN yum install -y ansible \
                    python-pip \
                    libyaml-devel \
                    gcc \
-                   docker 
+                   docker \
+                   origin-clients
                   
 RUN git clone http://github.com/jmontleon/vessel-scratch /vessel \
     && git clone http://github.com/ansible/ansible-container /ansible-container \
@@ -19,3 +20,4 @@ RUN git clone http://github.com/jmontleon/vessel-scratch /vessel \
    
 
 CMD ["/usr/bin/ansible-playbook", "/vessel/vessel.yml"]
+
