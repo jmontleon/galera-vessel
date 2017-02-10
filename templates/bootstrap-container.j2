@@ -1,7 +1,7 @@
 version: "2"
 services:
   mariadb-bootstrap:
-    image: centos:7
+    image: docker.io/jmontleon/base-ansible-vessel:latest
     restart: OnFailure
     entrypoint: [/usr/bin/entrypoint.sh]
     working_dir: /
