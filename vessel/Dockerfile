@@ -5,7 +5,6 @@ RUN yum install -y epel-release centos-release-openshift-origin
 RUN yum install -y ansible \
                    git \
                    python-devel \
-                   python-setuptools \
                    python-pip \
                    libyaml-devel \
                    gcc \

@@ -1,38 +1,50 @@
 ---
-- hosts: localhost
-  tasks:
-    #deploy cluster
-    - name: delete directory for cluster ansible-container
-      file: path=/tmp/galera state=absent
+#- hosts: localhost
+#  tasks:
+#deploy cluster
+- name: login
+  shell: "oc login https://10.1.2.2:8443 --token={{ token }} --insecure-skip-tls-verify=true"
 
-    - name: create directory for cluster ansible-container
-      file: path=/tmp/galera state=directory
+- name: delete directory for cluster ansible-container
+  file: path=/tmp/grow/galera state=absent
 
-    - name: init cluster ansible-container
-      shell: "ansible-container init"
-      args:
-        chdir: /tmp/galera
+- name: create directory for cluster ansible-container
+  file: path=/tmp/grow/galera state=directory
 
-    - name: write container.yml for cluster ansible-container with {{ containers }} containers
-      template: src=templates/cluster-container.j2 dest=/tmp/galera/ansible/container.yml
+- name: init cluster ansible-container
+  shell: "ansible-container init"
+  args:
+    chdir: /tmp/grow/galera
 
-    - name: write main.yml for cluster ansible-container
-      template: src=templates/cluster-main.j2 dest=/tmp/galera/ansible/main.yml
-    
-    - name: write requirements.yml for cluster ansible-container
-      template: src=templates/requirements.j2 dest=/tmp/galera/ansible/requirements.yml
+- name: write container.yml for cluster ansible-container with {{ containers }} containers
+  template: src=templates/cluster-container.j2 dest=/tmp/grow/galera/ansible/container.yml
 
-    - name: build cluster ansible-container
-      shell: "ansible-container build"
-      args:
-        chdir: /tmp/galera
+- name: write main.yml for cluster ansible-container
+  template: src=templates/cluster-main.j2 dest=/tmp/grow/galera/ansible/main.yml
 
-    - name: ship cluster ansible-container
-      shell: "ansible-container shipit openshift --local-images"
-      args:
-        chdir: /tmp/galera
+- name: write requirements.yml for cluster ansible-container
+  template: src=templates/requirements.j2 dest=/tmp/grow/galera/ansible/requirements.yml
 
-    - name: play cluster ansible-container
-      shell: "ansible-playbook ansible/shipit-openshift.yml"
-      args:
-        chdir: /tmp/galera
+- name: build cluster ansible-container
+  shell: "ansible-container build"
+  args:
+    chdir: /tmp/grow/galera
+
+- name: ship cluster ansible-container
+  shell: "ansible-container shipit openshift --local-images"
+  args:
+    chdir: /tmp/grow/galera
+
+- replace:
+    destfile: /tmp/grow/galera/ansible/roles/galera-openshift/tasks/main.yml
+    regexp: 'targetPort: 4567'
+    replace: 'targetPort: 4567\n    - name: port-4567-udp\n      port: 4567\n      protocol: UDP\n      targetPort: 4567'
+    backup: no
+
+- name: play bootstrap ansible-container
+  shell: "for i in $(oc -n galera get dc | cut -d ' ' -f 1 | grep mariadb- | grep -v mariadb-1); do oc -n galera delete dc $i; oc delete service $i; oc delete route $i; sleep 10; done"
+
+- name: play cluster ansible-container
+  shell: "ansible-playbook ansible/shipit-openshift.yml"
+  args:
+    chdir: /tmp/grow/galera

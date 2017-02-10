@@ -2,16 +2,18 @@
 - hosts: localhost
   vars:
     task: "{{ lookup('env','TASK') }}"
-    containers: "{{ lookup('env','CLUSTER_SIZE') }}"
+    containers: "{{ lookup('env','CLUSTER_SIZE') | int }}"
     token: "{{ lookup('env','TOKEN') }}"
   tasks:
-   - name: run {{ task }} with {{ containers }} containers
-     command: ansible-playbook "{{ task }}.yml" "-e" '{"containers"{{':'}} {{ containers }} }' "-e" '{"token"{{':'}} {{ token }} }' "-e" '{"task"{{':'}} {{ task  }} }'
-     when: task == "deploy-cluster"
+    - include: "{{ task }}.yml"
+      static: no
+ 
+#   - name: run {{ task }} with {{ containers }} containers
+#     command: ansible-playbook "{{ task }}.yml" "-e" '{"containers"{{':'}} {{ containers }} }' "-e" '{"token"{{':'}} {{ token }} }' "-e" '{"task"{{':'}} {{ task  }} }'
+#     when: task == "deploy-cluster"
 
-   - name: run {{ task }} to {{ containers }} containers
-     command: ansible-playbook "{{ task }}.yml" "-e" '{"containers"{{':'}} {{ containers }} }' "-e" '{"token"{{':'}} {{ token }} }' "-e" '{"task"{{':'}} {{ task  }} }'
-     when: task == "grow-cluster"
+   #- name: run {{ task }} to {{ containers }} containers
+#     command: ansible-playbook "{{ task }}.yml" "-e" '{"containers"{{':'}} {{ containers }} }' "-e" '{"token"{{':'}} {{ token }} }' "-e" '{"task"{{':'}} {{ task  }} }'
 #
 #   - name: run {{ task }} cluster
 #     command: ansible-playbook "{{ task }}.yml"
