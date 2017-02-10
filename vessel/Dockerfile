@@ -11,7 +11,7 @@ RUN yum install -y ansible \
                    docker \
                    origin-clients
                   
-RUN git clone http://github.com/jmontleon/vessel-scratch /vessel \
+RUN git clone http://github.com/jmontleon/galera-vessel /vessel \
     && git clone http://github.com/ansible/ansible-container /ansible-container \
     && cd /ansible-container \
     && pip install --upgrade setuptools \

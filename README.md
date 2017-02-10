@@ -1,28 +1,21 @@
 ## Invocation
 
-export TASK=deploy-cluster && export CLUSTER_SIZE=3 && ansible-playbook vessel.yml
-
-* Currently only goes as far as building misconfigured bootstrap and cluster containers
-
 To run from within a vessel container:
+
+To deploy a galera cluster:
+
 * docker build vessel
-* docker run -e TASK=deploy-cluster -e CLUSTER_SIZE=3 -v /var/run/docker.sock:/var/run/docker.sock --privileged id
+* docker tag resulting-id galera-vessel
+* docker run -e TOKEN=$(oc whoami -t) -e TASK=deploy-cluster -e CLUSTER_SIZE=3 -v /var/run/docker.sock:/var/run/docker.sock --privileged -t galera-vessel
+
+To grow your existing galera cluster:
+* docker run -e TOKEN=$(oc whoami -t) -e TASK=grow-cluster -e CLUSTER_SIZE=5 -v /var/run/docker.sock:/var/run/docker.sock --privileged -t galera-vessel
 
 ## TODO:
-* Fix the my.cnf configuration for each boostrap 
-* Do the existing boostrap build work in the deploy-cluster playbook
-* deploy the boostrap container
-* wait for it to finish
-* Do the existing build work in the deploy-cluster playbook
-* Deploy the cluster
-
-Full process in theory would be:
-* deploy the vessel using ansible-container.
-* invoke the vessel with parameters like '{"task":"deploy", "containers":3}'
-* it builds the bootstrap container and bootstraps the db
-* waits until the bootstrap process is done
-* builds the cluster hosts and deploys them
-* Add some other example of what can be done
- - add 2 nodes to the existing cluster '{"task":"add", "containers":2}'
- -  subtract?
- - heal a broken db
+* add shrink-cluster
+* add heal cluster
+* use an image with packages already installed to speed up deploy process
+* parameterize server address. right now it's hard coded to https://10.1.2.2
+* parameterize project/namespace. right now it does everything in the galera project/namespace
+* ???
+* Profit
