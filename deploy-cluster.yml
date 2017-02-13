@@ -38,9 +38,12 @@
   args:
     chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
 
+- name: wait for bootstrap
+  shell: "sleep 120"
+
 #TODO: how do we run a container and let it exit and go away so we don't have to do this
 - name: delete bootstrap dc
-  shell: "sleep 120 && oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} delete dc mariadb-bootstrap"
+  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} delete dc mariadb-bootstrap"
 
 #deploy cluster
 - name: delete directory for cluster ansible-container
