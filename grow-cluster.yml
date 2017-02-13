@@ -41,7 +41,7 @@
     replace: 'targetPort: 4567\n    - name: port-4567-udp\n      port: 4567\n      protocol: UDP\n      targetPort: 4567'
     backup: no
 
-- name: play bootstrap ansible-container
+- name: gracefully remove replicas ansible-container
   shell: "for i in $(oc -n galera get dc | cut -d ' ' -f 1 | grep mariadb- | grep -v mariadb-1); do oc -n galera delete dc $i; oc delete service $i; oc delete route $i; sleep 10; done"
 
 - name: play cluster ansible-container
