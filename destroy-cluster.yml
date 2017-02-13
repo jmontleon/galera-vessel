@@ -1,4 +1,4 @@
 ---
 #TODO Probably worthwhile to make it possible to delete the cluster containers without nuking the pvc's.
 - name: delete cluster namespace
-  shell: "oc delete --server={{ server_url }} --token={{ token }} namespace {{ namespace }}"
+  shell: "oc delete --server={{ server_url }} --token={{ token }} namespace {{ namespace }} --insecure-skip-tls-verify=true"
