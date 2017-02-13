@@ -8,10 +8,10 @@ services:
     user: mysql
     command: [/usr/bin/dumb-init, mysqld, --wsrep-new-cluster]
     environment:
-    - MARIADB_DATABASE=mysql
-    - MARIADB_USERNAME=admin
-    - MARIADB_PASSWORD=foo
-    - MARIADB_ROOT_PASSWORD=sesame
+    - MARIADB_DATABASE={{ mariadb_database }}
+    - MARIADB_USERNAME={{ mariadb_username }}
+    - MARIADB_PASSWORD={{ mariadb_password }}
+    - MARIADB_ROOT_PASSWORD={{ mariadb_root_password }}
     volumes:
     - mariadb1-data:/var/lib/mysql:rw
     options:

@@ -13,10 +13,10 @@ services:
     command: [/usr/bin/dumb-init, mysqld_safe]
 {% endif %}
     environment:
-    - MARIADB_DATABASE=mysql
-    - MARIADB_USERNAME=admin
-    - MARIADB_PASSWORD=foo
-    - MARIADB_ROOT_PASSWORD=sesame
+    - MARIADB_DATABASE={{ mariadb_database }}
+    - MARIADB_USERNAME={{ mariadb_username }}
+    - MARIADB_PASSWORD={{ mariadb_password }}
+    - MARIADB_ROOT_PASSWORD={{ mariadb_root_password }}
     expose:
     - 3306
     - 4567

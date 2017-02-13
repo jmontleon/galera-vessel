@@ -1,81 +1,81 @@
 ---
 #boostrap database
 - name: login
-  shell: "oc login https://10.1.2.2:8443 --token={{ token }} --insecure-skip-tls-verify=true"
+  shell: "oc login {{ server_url }} --token={{ token }} --insecure-skip-tls-verify=true"
 
 - name: delete directory for bootstrap ansible-container
-  file: path=/tmp/bootstrap/galera state=absent
+  file: path=/tmp/bootstrap/{{ namespace }} state=absent
 
 - name: create directory for boostrap ansible-containers
-  file: path=/tmp/bootstrap/galera state=directory
+  file: path=/tmp/bootstrap/{{ namespace }} state=directory
 
 - name: init boostrap ansible-container
   shell: "ansible-container init"
   args:
-    chdir: /tmp/bootstrap/galera
+    chdir: /tmp/bootstrap/{{ namespace }}
 
 - name: write container.yml for boostrap ansible-container
-  template: src=templates/bootstrap-container.j2 dest=/tmp/bootstrap/galera/ansible/container.yml
+  template: src=templates/bootstrap-container.j2 dest=/tmp/bootstrap/{{ namespace }}/ansible/container.yml
 
 - name: write main.yml for bootstrap ansible-container
-  template: src=templates/bootstrap-main.j2 dest=/tmp/bootstrap/galera/ansible/main.yml
+  template: src=templates/bootstrap-main.j2 dest=/tmp/bootstrap/{{ namespace }}/ansible/main.yml
 
 - name: write requirements.yml for boostrap ansible-container
-  template: src=templates/requirements.j2 dest=/tmp/bootstrap/galera/ansible/requirements.yml
+  template: src=templates/requirements.j2 dest=/tmp/bootstrap/{{ namespace }}/ansible/requirements.yml
 
 - name: build bootstrap ansible-container
   shell: "ansible-container build"
   args:
-    chdir: /tmp/bootstrap/galera
+    chdir: /tmp/bootstrap/{{ namespace }}
 
 - name: ship bootstrap ansible-container
   shell: "ansible-container shipit openshift --local-images"
   args:
-    chdir: /tmp/bootstrap/galera
+    chdir: /tmp/bootstrap/{{ namespace }}
 
 - name: play bootstrap ansible-container
   shell: "ansible-playbook ansible/shipit-openshift.yml"
   args:
-    chdir: /tmp/bootstrap/galera
+    chdir: /tmp/bootstrap/{{ namespace }}
 
 #TODO: how do we run a container and let it exit and go away so we don't have to do this
 - name: delete bootstrap dc
-  shell: "sleep 120 && oc --token={{ token }} --server=https://10.1.2.2:8443 -n galera delete dc mariadb-bootstrap"
+  shell: "sleep 120 && oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} delete dc mariadb-bootstrap"
 
 #deploy cluster
 - name: delete directory for cluster ansible-container
-  file: path=/tmp/deploy/galera state=absent
+  file: path=/tmp/deploy/{{ namespace }} state=absent
 
 - name: create directory for cluster ansible-container
-  file: path=/tmp/deploy/galera state=directory
+  file: path=/tmp/deploy/{{ namespace }} state=directory
 
 - name: init cluster ansible-container
   shell: "ansible-container init"
   args:
-    chdir: /tmp/deploy/galera
+    chdir: /tmp/deploy/{{ namespace }}
 
 - name: write container.yml for cluster ansible-container with {{ containers }} containers
-  template: src=templates/cluster-container.j2 dest=/tmp/deploy/galera/ansible/container.yml
+  template: src=templates/cluster-container.j2 dest=/tmp/deploy/{{ namespace }}/ansible/container.yml
 
 - name: write main.yml for cluster ansible-container
-  template: src=templates/cluster-main.j2 dest=/tmp/deploy/galera/ansible/main.yml
+  template: src=templates/cluster-main.j2 dest=/tmp/deploy/{{ namespace }}/ansible/main.yml
 
 - name: write requirements.yml for cluster ansible-container
-  template: src=templates/requirements.j2 dest=/tmp/deploy/galera/ansible/requirements.yml
+  template: src=templates/requirements.j2 dest=/tmp/deploy/{{ namespace }}/ansible/requirements.yml
 
 - name: build cluster ansible-container
   shell: "ansible-container build"
   args:
-    chdir: /tmp/deploy/galera
+    chdir: /tmp/deploy/{{ namespace }}
 
 - name: ship cluster ansible-container
   shell: "ansible-container shipit openshift --local-images"
   args:
-    chdir: /tmp/deploy/galera
+    chdir: /tmp/deploy/{{ namespace }}
 
 #TODO: this should work via ansible-container. Either I'm doing it wrong or it's a bug.
 - replace: 
-    destfile: /tmp/deploy/galera/ansible/roles/galera-openshift/tasks/main.yml
+    destfile: /tmp/deploy/{{ namespace }}/ansible/roles/{{ namespace }}-openshift/tasks/main.yml
     regexp: 'targetPort: 4567'
     replace: 'targetPort: 4567\n    - name: port-4567-udp\n      port: 4567\n      protocol: UDP\n      targetPort: 4567'
     backup: no
@@ -83,4 +83,4 @@
 - name: play cluster ansible-container
   shell: "ansible-playbook ansible/shipit-openshift.yml"
   args:
-    chdir: /tmp/deploy/galera
+    chdir: /tmp/deploy/{{ namespace }}

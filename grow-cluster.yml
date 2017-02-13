@@ -3,48 +3,48 @@
 #  tasks:
 #deploy cluster
 - name: login
-  shell: "oc login https://10.1.2.2:8443 --token={{ token }} --insecure-skip-tls-verify=true"
+  shell: "oc login {{ server_url }} --token={{ token }} --insecure-skip-tls-verify=true"
 
 - name: delete directory for cluster ansible-container
-  file: path=/tmp/grow/galera state=absent
+  file: path=/tmp/grow/{{ namespace }} state=absent
 
 - name: create directory for cluster ansible-container
-  file: path=/tmp/grow/galera state=directory
+  file: path=/tmp/grow/{{ namespace }} state=directory
 
 - name: init cluster ansible-container
   shell: "ansible-container init"
   args:
-    chdir: /tmp/grow/galera
+    chdir: /tmp/grow/{{ namespace }}
 
 - name: write container.yml for cluster ansible-container with {{ containers }} containers
-  template: src=templates/cluster-container.j2 dest=/tmp/grow/galera/ansible/container.yml
+  template: src=templates/cluster-container.j2 dest=/tmp/grow/{{ namespace }}/ansible/container.yml
 
 - name: write main.yml for cluster ansible-container
-  template: src=templates/cluster-main.j2 dest=/tmp/grow/galera/ansible/main.yml
+  template: src=templates/cluster-main.j2 dest=/tmp/grow/{{ namespace }}/ansible/main.yml
 
 - name: write requirements.yml for cluster ansible-container
-  template: src=templates/requirements.j2 dest=/tmp/grow/galera/ansible/requirements.yml
+  template: src=templates/requirements.j2 dest=/tmp/grow/{{ namespace }}/ansible/requirements.yml
 
 - name: build cluster ansible-container
   shell: "ansible-container build"
   args:
-    chdir: /tmp/grow/galera
+    chdir: /tmp/grow/{{ namespace }}
 
 - name: ship cluster ansible-container
   shell: "ansible-container shipit openshift --local-images"
   args:
-    chdir: /tmp/grow/galera
+    chdir: /tmp/grow/{{ namespace }}
 
 - replace:
-    destfile: /tmp/grow/galera/ansible/roles/galera-openshift/tasks/main.yml
+    destfile: /tmp/grow/{{ namespace }}/ansible/roles/{{namespace}}-openshift/tasks/main.yml
     regexp: 'targetPort: 4567'
     replace: 'targetPort: 4567\n    - name: port-4567-udp\n      port: 4567\n      protocol: UDP\n      targetPort: 4567'
     backup: no
 
 - name: gracefully remove replicas ansible-container
-  shell: "for i in $(oc -n galera get dc | cut -d ' ' -f 1 | grep mariadb- | grep -v mariadb-1); do oc -n galera delete dc $i; oc delete service $i; oc delete route $i; sleep 10; done"
+  shell: "for i in $(oc -n {{ namespace }} get dc | cut -d ' ' -f 1 | grep mariadb- | grep -v mariadb-1); do oc -n {{ namespace }} delete dc $i; oc delete -n {{ namespace }} service $i; oc delete -n {{ namespace }} route $i; sleep 10; done"
 
 - name: play cluster ansible-container
   shell: "ansible-playbook ansible/shipit-openshift.yml"
   args:
-    chdir: /tmp/grow/galera
+    chdir: /tmp/grow/{{ namespace }}
