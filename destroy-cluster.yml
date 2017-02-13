@@ -5,4 +5,4 @@
 
 #TODO Probably worthwhile to make it possible to delete the cluster containers without nuking the pvc's.
 - name: delete cluster namespace
-  shell: "oc delete namespace galera
+  shell: "oc delete namespace galera"
