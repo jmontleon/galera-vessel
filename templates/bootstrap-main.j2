@@ -8,7 +8,7 @@
 - hosts: mariadb-*
   gather_facts: false
   vars:
-    mariadb_root_password: sesame
+    mariadb_root_password: {{ mariadb_root_password }}
     wsrep_cluster_addresses: ""
     wsrep_node_name: mariadb-1
   roles:

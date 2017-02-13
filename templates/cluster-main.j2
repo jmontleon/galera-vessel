@@ -9,7 +9,7 @@
 {% for i in range (1,count+1) %}
 - hosts: mariadb-{{ i }}
   vars:
-    mariadb_root_password: sesame
+    mariadb_root_password: {{ mariadb_root_password }}
     wsrep_cluster_addresses: {% for j in range (1,count+1) %}mariadb-{{ j }}{% if not loop.last %},{% endif %}{% endfor %}
 
     wsrep_node_name: mariadb-{{ i }}
