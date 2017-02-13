@@ -15,15 +15,15 @@ To destroy the cluster - Use with caution. Right now this deletes the entire nam
 * docker run -v /var/lib/ansible-container:/var/lib/ansible-container -v /var/run/docker.sock:/var/run/docker.sock --privileged -t -e TOKEN=$(oc whoami -t) -e TASK=destroy-cluster galera-vessel
 
 ## Parameters
-CLUSTER_SIZE: Number of Replica to deploy.
-MARIADB_DATABASE: database name to create, Default: mysql
-MARIADB_PASSWORD: password for the database. Default: foo
-MARIADB_ROOT_PASSWORD: root password. Used for galera sync as well. Default: sesame
-MARIA_DB_USERNAME: username for the database. Default: admin
-NAMESPACE: Namespace to deploy the cluster in. Default: galera
-OPENSHIFT_SERVER_URL: URL for the Openshift server. Default: https://10.1.2.2:8443
-TASK: Task to perform.
-TOKEN: Token used to authenticate. You can find your token by running 'oc whoami -t'
+* CLUSTER_SIZE: Number of Replica to deploy.
+* MARIADB_DATABASE: database name to create, Default: mysql
+* MARIADB_PASSWORD: password for the database. Default: foo
+* MARIADB_ROOT_PASSWORD: root password. Used for galera sync as well. Default: sesame
+* MARIA_DB_USERNAME: username for the database. Default: admin
+* NAMESPACE: Namespace to deploy the cluster in. Default: galera
+* OPENSHIFT_SERVER_URL: URL for the Openshift server. Default: https://10.1.2.2:8443
+* TASK: Task to perform.
+* TOKEN: Token used to authenticate. You can find your token by running 'oc whoami -t'
 
 ## TODO:
 * add shrink-cluster
