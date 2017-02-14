@@ -29,6 +29,18 @@
     chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
   with_sequence: count={{ containers }}
 
+- name: create svc definitions
+  template:
+    src: templates/mariadb-svc.yml
+    dest: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}/mariadb{{ item }}-svc.yml
+  with_sequence: count={{ containers }}
+
+- name: create services
+  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb{{ item }}-svc.yml"
+  args:
+    chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
+  with_sequence: count={{ containers }}
+
 - name: create boostrap job definition
   template:
     src: templates/bootstrap-job.j2 
