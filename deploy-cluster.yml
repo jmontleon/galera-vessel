@@ -9,6 +9,19 @@
 - name: create directory for boostrap ansible-cluster_size
   file: path=/var/lib/ansible-container/galera/bootstrap/{{ namespace }} state=directory
 
+- name: initialize cluster host list 
+  set_fact:
+    cs_array: "[]"
+
+- name: populate cluster host list
+  set_fact: 
+    cs_array: "{{ cs_array }} + ['mariadb-{{ item }}']"
+  with_sequence: count={{ cluster_size }}
+
+- name: write cluster host list
+  set_fact: 
+    cluster_string: "{{ cs_array | join(',') }}"
+
 - name: check if namespace exists
   shell: "oc get project"
   register: get_namespace_result
@@ -41,15 +54,21 @@
     chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
   with_sequence: count={{ cluster_size }}
 
+- name: create dc definitions
+  template:
+    src: templates/mariadb-dc.yml
+    dest: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}/mariadb-{{ item }}-dc.yml
+  with_sequence: count={{ cluster_size }}
+
 - name: create boostrap job definition
   template:
     src: templates/bootstrap-job.j2 
     dest: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}/bootstrap-job.yml
 
-- name: create bootstrap job
-  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f bootstrap-job.yml"
-  args:
-    chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
+#- name: create bootstrap job
+#  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f bootstrap-job.yml"
+#  args:
+#    chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
 
 #- name: wait for boostrap to complete
 #  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} get pods | grep mariadb-bootstrap"
@@ -58,18 +77,11 @@
 #  retries: 24
 #  delay: 5
 
-- name: set start cluster string
-  set_fact:
-    cs_array: "[]"
 
-- name: generate cluster string
-  set_fact: 
-    cs_array: "{{ cs_array }} + ['mariadb-{{ item }}']"
-  with_sequence: count={{ cluster_size }}
 
-- name: generate cluster string
-  set_fact: 
-    cs: "{{ cs_array | join(',') }}"
+#- name: create deployment configs
+#  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb{{ item }}-data.yml"
+#  args:
+#    chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
+#  with_sequence: count={{ cluster_size }}
 
-- name: "echo {{ cs }}"
-  shell: "echo {{ cs }}"
