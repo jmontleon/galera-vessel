@@ -4,7 +4,7 @@ metadata:
   labels:
     app: galera
     service: mariadb-{{ item }}
-  name: mariadb-1
+  name: mariadb-{{ item }}
 spec:
   ports:
   - name: port-3306
