@@ -60,7 +60,7 @@
 
 - name: generate cluster string
   set_fact: 
-    cs: "{{ cluster_string }}+mariadb-{{ item }}"
+    cs: "{{ cluster_string }}mariadb-{{ item }}"
   with_sequence: count={{ cluster_size }}
 
 - name: "echo {{ cs }}"
