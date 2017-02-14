@@ -17,13 +17,13 @@
   shell: "oc new-project {{ namespace }}"
   when: "'{{ namespace }}' not in get_namespace_result.stdout"
 
-- name: create service definition
+- name: create pvc definitions
   template:
-    src: templates/file
+    src: templates/mariadb-pvc.yml
     dest: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}/mariadb{{ item }}-data.yml
   with_sequence: count={{ containers }}
 
-- name: create pvc
+- name: create pvcs
   shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb{{ item }}-data.yml"
   args:
     chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
