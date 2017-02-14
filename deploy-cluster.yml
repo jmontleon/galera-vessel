@@ -60,7 +60,7 @@
 
 - name: set start cluster string
   set_fact:
-    cs_array: ['one', 'two']
+    cs_array: "['one', 'two']"
 
 - name: generate cluster string
   set_fact: 
