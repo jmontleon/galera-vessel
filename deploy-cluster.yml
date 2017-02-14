@@ -61,4 +61,6 @@
 - name: generate cluster string
   set_fact: cluster_string = "{{ cluster_string }}+mariadb-{{ item }}"
   with_sequence: count={{ cluster_size }}
-- debug: msg="echo cluster string is: {{ cluster_string }}"
+
+- name: "echo {{ cluster_string }}"
+  shell: "{{ cluster_string }}"
