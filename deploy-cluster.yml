@@ -58,6 +58,10 @@
 #  retries: 24
 #  delay: 5
 
+- name: set start cluster string
+  set_fact:
+    cs: ""
+
 - name: generate cluster string
   set_fact: 
     cs: "{{ cs }}mariadb-{{ item }}"
