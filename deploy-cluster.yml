@@ -60,12 +60,12 @@
 
 - name: set start cluster string
   set_fact:
-    cs: ""
+    cs_array: []
 
 - name: generate cluster string
   set_fact: 
-    cs: "{{ cs }}mariadb-{{ item }}"
+    cs: "{{ cs_array }} + [mariadb-{{ item }}]"
   with_sequence: count={{ cluster_size }}
 
-- name: "echo {{ cs }}"
-  shell: "echo {{ cs }}"
+- name: "echo {{ cs_array }}"
+  shell: "echo {{ cs_array  }}"
