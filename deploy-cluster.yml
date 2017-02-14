@@ -17,16 +17,22 @@
   shell: "oc new-project {{ namespace }}"
   when: "'{{ namespace }}' not in get_namespace_result.stdout"
 
-- name: create pvc definition
-  template: src=templates/bootstrap-pvc.j2 dest=/var/lib/ansible-container/galera/bootstrap/{{ namespace }}/bootstrap-pvc.yml
+- name: create service definition
+  template:
+    src: templates/file
+    dest: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}/mariadb{{ item }}-data.yml
+  with_sequence: count={{ containers }}
 
 - name: create pvc
-  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f bootstrap-pvc.yml"
+  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb{{ item }}-data.yml"
   args:
     chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
+  with_sequence: count={{ containers }}
 
 - name: create boostrap job definition
-  template: src=templates/bootstrap-job.j2 dest=/var/lib/ansible-container/galera/bootstrap/{{ namespace }}/bootstrap-job.yml
+  template:
+    src: templates/bootstrap-job.j2 
+    dest: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}/bootstrap-job.yml
 
 - name: create bootstrap job
   shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f bootstrap-job.yml"
@@ -40,76 +46,3 @@
   retries: 24
   delay: 5
 
-#- name: write container.yml for boostrap ansible-container
-#  template: src=templates/bootstrap-container.j2 dest=/var/lib/ansible-container/galera/bootstrap/{{ namespace }}/ansible/container.yml
-#
-#- name: write main.yml for bootstrap ansible-container
-#  template: src=templates/bootstrap-main.j2 dest=/var/lib/ansible-container/galera/bootstrap/{{ namespace }}/ansible/main.yml
-
-#- name: write requirements.yml for boostrap ansible-container
-#  template: src=templates/requirements.j2 dest=/var/lib/ansible-container/galera/bootstrap/{{ namespace }}/ansible/requirements.yml
-
-#- name: build bootstrap ansible-container
-#  shell: "ansible-container build"
-#  args:
-#    chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
-
-#- name: ship bootstrap ansible-container
-#  shell: "ansible-container shipit openshift --local-images"
-#  args:
-#    chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
-
-#- name: play bootstrap ansible-container
-#  shell: "ansible-playbook ansible/shipit-openshift.yml"
-#  args:
-#    chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
-
-#- name: wait for bootstrap
-#  shell: "sleep 120"
-
-#TODO: how do we run a container and let it exit and go away so we don't have to do this
-#- name: delete bootstrap dc
-#  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} delete dc mariadb-bootstrap"
-
-#deploy cluster
-#- name: delete directory for cluster ansible-container
-#  file: path=/var/lib/ansible-container/galera/deploy/{{ namespace }} state=absent
-
-#- name: create directory for cluster ansible-container
-#  file: path=/var/lib/ansible-container/galera/deploy/{{ namespace }} state=directory
-
-#- name: init cluster ansible-container
-#  shell: "ansible-container init"
-#  args:
-#    chdir: /var/lib/ansible-container/galera/deploy/{{ namespace }}
-
-#- name: write container.yml for cluster ansible-container with {{ containers }} containers
-#  template: src=templates/cluster-container.j2 dest=/var/lib/ansible-container/galera/deploy/{{ namespace }}/ansible/container.yml
-
-#- name: write main.yml for cluster ansible-container
-#  template: src=templates/cluster-main.j2 dest=/var/lib/ansible-container/galera/deploy/{{ namespace }}/ansible/main.yml
-
-#- name: write requirements.yml for cluster ansible-container
-#  template: src=templates/requirements.j2 dest=/var/lib/ansible-container/galera/deploy/{{ namespace }}/ansible/requirements.yml
-
-#- name: build cluster ansible-container
-#  shell: "ansible-container build"
-#  args:
-#    chdir: /var/lib/ansible-container/galera/deploy/{{ namespace }}
-
-#- name: ship cluster ansible-container
-#  shell: "ansible-container shipit openshift --local-images"
-#  args:
-#    chdir: /var/lib/ansible-container/galera/deploy/{{ namespace }}
-
-#TODO: this should work via ansible-container. Either I'm doing it wrong or it's a bug.
-#- replace: 
-#    destfile: /var/lib/ansible-container/galera/deploy/{{ namespace }}/ansible/roles/{{ namespace }}-openshift/tasks/main.yml
-#    regexp: 'targetPort: 4567'
-#    replace: 'targetPort: 4567\n    - name: port-4567-udp\n      port: 4567\n      protocol: UDP\n      targetPort: 4567'
-#    backup: no
-
-#- name: play cluster ansible-container
-#  shell: "ansible-playbook ansible/shipit-openshift.yml"
-#  args:
-#    chdir: /var/lib/ansible-container/galera/deploy/{{ namespace }}
