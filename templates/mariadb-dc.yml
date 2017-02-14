@@ -31,9 +31,9 @@ spec:
       - args:
         - /usr/bin/dumb-init
         - mysqld_safe
-        {% if mariadb-{{ item }} == "mariadb-1" %}
+        {% if "mariadb-"+item == "mariadb-1" -%}
         - --wsrep-new-cluster
-        {% endif %}
+        {% endif -%}
         env:
         - name: MARIADB_ROOT_PASSWORD
           value: {{ mariadb_root_password }}
