@@ -59,8 +59,8 @@
 #  delay: 5
 
 - name: generate cluster string
-  cluster_string:  "{{ cluster_string }}+mariadb-{{ item }}"
+  set_fact: cs: "{{ cluster_string }}+mariadb-{{ item }}"
   with_sequence: count={{ cluster_size }}
 
-- name: "echo {{ cluster_string }}"
-  shell: "echo {{ cluster_string }}"
+- name: "echo {{ cs }}"
+  shell: "echo {{ cs }}"
