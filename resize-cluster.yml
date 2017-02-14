@@ -1,0 +1,75 @@
+---
+#resize cluster
+- name: oc login
+  shell: "oc login {{ server_url }} --token={{ token }} --insecure-skip-tls-verify=true"
+
+- name: initialize cluster host list
+  set_fact:
+    cs_array: "[]"
+
+- name: populate cluster host list
+  set_fact:
+    cs_array: "{{ cs_array }} + ['mariadb-{{ item }}']"
+  with_sequence: count={{ cluster_size }}
+
+- name: write cluster host list
+  set_fact:
+    cluster_string: "{{ cs_array | join(',') }}"
+
+- name: delete directory for cluster ansible-container
+  file: path=/tmp/galera/{{ namespace }} state=absent
+
+- name: create directory for cluster ansible-container
+  file: path=/tmp/galera/{{ namespace }} state=directory
+
+- name: create pvc definitions
+  template:
+    src: templates/mariadb-pvc.yml
+    dest: /tmp/galera/{{ namespace }}/mariadb-{{ item }}-data.yml
+  with_sequence: count={{ cluster_size }}
+
+- name: create non-existent pvcs
+  shell: "if ! oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} get pvc mariadb-{{ item }}-data; then \
+          oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb-{{ item }}-data.yml; fi"
+  args:
+    chdir: /tmp/galera/{{ namespace }}
+  with_sequence: count={{ cluster_size }}
+
+- name: create svc definitions
+  template:
+    src: templates/mariadb-svc.yml
+    dest: /tmp/galera/{{ namespace }}/mariadb-{{ item }}-svc.yml
+  with_sequence: count={{ cluster_size }}
+
+- name: create non-existent services
+  shell: "if ! oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} get svc mariadb-{{ item }}; then \
+          oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb-{{ item }}-svc.yml; fi"
+  args:
+    chdir: /tmp/galera/{{ namespace }}
+  with_sequence: count={{ cluster_size }}
+
+- name: create dc definitions
+  template:
+    src: templates/mariadb-dc.yml
+    dest: /tmp/galera/{{ namespace }}/mariadb-{{ item }}-dc.yml
+  with_sequence: count={{ cluster_size }}
+
+- name: create or recreate deployment configs
+  shell: "if oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} get dc mariadb-{{ item }}; then \
+          oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} delete dc mariadb-{{ item }}; \ 
+          while oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} get pods -l 'service=mariadb-{{ item }}' | grep STATUS; \
+          do sleep 5; done; fi; \
+          oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb-{{ item }}-dc.yml;"
+  args:
+    chdir: /tmp/galera/{{ namespace }}
+  with_sequence: count={{ cluster_size }}
+
+- name: get list of deployment configs
+  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} get dc -l 'app=galera' | grep ^mariadb | cut -d ' ' -f 1"
+  register: deployment_configs
+
+- name: delete excess node configs
+  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} delete dc {{ item }}; \
+          oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} delete pvc {{ item }}-data; \
+          oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} delete svc {{ item }}"
+  with_items: "{{ deployment_configs.stdout_lines | difference(cs_array) }}"
