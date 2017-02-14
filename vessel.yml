@@ -1,7 +1,8 @@
 ---
 - hosts: localhost
   vars:
-    containers: "{{ lookup('env','CLUSTER_SIZE') | int }}"
+    cluster_size: "{{ lookup('env','CLUSTER_SIZE') | int }}"
+    cluster_string: ""
     namespace: "{{ lookup('env','NAMESPACE') | default('galera', true) }}"
     mariadb_database: "{{ lookup('env','MARIADB_DATABASE') | default('mysql', true) }}"
     mariadb_password: "{{ lookup('env','MARIADB_PASSWORD') | default('foo', true) }}"

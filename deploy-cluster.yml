@@ -6,7 +6,7 @@
 - name: delete directory for bootstrap ansible-container
   file: path=/var/lib/ansible-container/galera/bootstrap/{{ namespace }} state=absent
 
-- name: create directory for boostrap ansible-containers
+- name: create directory for boostrap ansible-cluster_size
   file: path=/var/lib/ansible-container/galera/bootstrap/{{ namespace }} state=directory
 
 - name: check if namespace exists
@@ -21,25 +21,25 @@
   template:
     src: templates/mariadb-pvc.yml
     dest: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}/mariadb{{ item }}-data.yml
-  with_sequence: count={{ containers }}
+  with_sequence: count={{ cluster_size }}
 
 - name: create pvcs
   shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb{{ item }}-data.yml"
   args:
     chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
-  with_sequence: count={{ containers }}
+  with_sequence: count={{ cluster_size }}
 
 - name: create svc definitions
   template:
     src: templates/mariadb-svc.yml
     dest: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}/mariadb{{ item }}-svc.yml
-  with_sequence: count={{ containers }}
+  with_sequence: count={{ cluster_size }}
 
 - name: create services
   shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb{{ item }}-svc.yml"
   args:
     chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
-  with_sequence: count={{ containers }}
+  with_sequence: count={{ cluster_size }}
 
 - name: create boostrap job definition
   template:
@@ -51,10 +51,13 @@
   args:
     chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
 
-- name: wait for boostrap to complete
-  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} get pods | grep mariadb-bootstrap"
-  register: job_result
-  until: "'Completed' in job_result.stdout"
-  retries: 24
-  delay: 5
+#- name: wait for boostrap to complete
+#  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} get pods | grep mariadb-bootstrap"
+#  register: job_result
+#  until: "'Completed' in job_result.stdout"
+#  retries: 24
+#  delay: 5
 
+- name: generate cluster string
+  set_fact: cluster_string = "{{ cluster_string }}+mariadb-{{ item }}"
+  with_sequence: count={{ cluster_size }}
