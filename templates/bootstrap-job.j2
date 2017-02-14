@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mariadb-bootstrap
+  namespace: {{ namespace }}
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - image: "docker.io/jmontleon/centos-7-galera-mariadb-10"
+          name: main
+          command: ["/usr/bin/entrypoint.sh"]
+          user: mysql
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: mariadb-persistent-storage
+          env:
+            - name: BOOTSTRAP
+              value: ""
+            - name: MARIADB_DATABASE
+              value: "{{ mariadb_database }}"
+            - name: MARIADB_USERNAME
+              value: "{{ mariadb_username }}"
+            - name: MARIADB_PASSWORD
+              value: "{{ mariadb_password }}"
+            - name: MARIADB_ROOT_PASSWORD
+              value: "{{ mariadb_root_password }}"
+      volumes:
+        - name: mariadb-persistent-storage
+          persistentVolumeClaim:
+            claimName: mariadb1-data
