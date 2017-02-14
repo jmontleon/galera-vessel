@@ -63,4 +63,4 @@
   with_sequence: count={{ cluster_size }}
 
 - name: "echo {{ cluster_string }}"
-  shell: "{{ cluster_string }}"
+  shell: "echo {{ cluster_string }}"
