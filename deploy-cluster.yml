@@ -63,7 +63,7 @@
 - name: create boostrap job definition
   template:
     src: templates/bootstrap-job.j2 
-    dest: /tmp/galera/{{ namespace }}-job.yml
+    dest: /tmp/galera/{{ namespace }}/bootstrap-job.yml
 
 - name: create bootstrap job
   shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f bootstrap-job.yml"
