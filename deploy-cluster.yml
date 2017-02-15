@@ -62,7 +62,7 @@
 
 - name: create boostrap job definition
   template:
-    src: templates-job.j2 
+    src: templates/bootstrap-job.j2 
     dest: /tmp/galera/{{ namespace }}-job.yml
 
 - name: create bootstrap job
