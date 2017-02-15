@@ -51,14 +51,14 @@
     dest: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}/mariadb-{{ item }}-dc.yml
   with_sequence: count={{ cluster_size }}
 
-#- name: create or recreate deployment configs
-#  shell: "if oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} get dc mariadb-{{ item }}; then \
-#          oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} delete dc mariadb-{{ item }}; \ 
-#          while oc get pods -l 'service=mariadb-{{ item }}' | grep STATUS; do sleep 5; done; fi; \
-#          oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb-{{ item }}-dc.yml;"
-#  args:
-#    chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
-#  with_sequence: count={{ cluster_size }}
+- name: create or recreate deployment configs
+  shell: "if oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} get dc mariadb-{{ item }}; then \
+          oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} delete dc mariadb-{{ item }}; \ 
+          while oc get pods -l 'service=mariadb-{{ item }}' | grep STATUS; do sleep 5; done; fi; \
+          oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb-{{ item }}-dc.yml;"
+  args:
+    chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
+  with_sequence: count={{ cluster_size }}
 
 - name: get list of deployment configs
   shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} get dc -l 'app=galera' | grep ^mariadb | cut -d ' ' -f 1"
