@@ -10,15 +10,7 @@ spec:
       containers:
         - image: "docker.io/jmontleon/centos-7-galera-mariadb-10"
           name: main
-          args:
-            - runas
-            - -l
-            - mysql
-            - -s
-            - /bin/bash
-            - -c  
-            - /usr/local/bin/bootstrap.sh
-          user: mysql
+          command: ["/usr/local/bin/bootstrap.sh"]
           volumeMounts:
             - mountPath: /var/lib/mysql
               name: mariadb-persistent-storage
