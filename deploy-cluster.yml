@@ -65,23 +65,21 @@
     src: templates/bootstrap-job.j2 
     dest: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}/bootstrap-job.yml
 
-#- name: create bootstrap job
-#  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f bootstrap-job.yml"
-#  args:
-#    chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
+- name: create bootstrap job
+  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f bootstrap-job.yml"
+  args:
+    chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
 
-#- name: wait for boostrap to complete
-#  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} get pods | grep mariadb-bootstrap"
-#  register: job_result
-#  until: "'Completed' in job_result.stdout"
-#  retries: 24
-#  delay: 5
+- name: wait for boostrap to complete
+  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} get pods | grep mariadb-bootstrap"
+  register: job_result
+  until: "'Completed' in job_result.stdout"
+  retries: 24
+  delay: 5
 
-
-
-#- name: create deployment configs
-#  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb-{{ item }}-data.yml"
-#  args:
-#    chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
-#  with_sequence: count={{ cluster_size }}
+- name: create deployment configs
+  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb-{{ item }}-dc.yml"
+  args:
+    chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
+  with_sequence: count={{ cluster_size }}
 
