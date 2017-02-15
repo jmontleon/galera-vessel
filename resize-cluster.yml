@@ -57,7 +57,8 @@
 - name: create or recreate deployment configs
   shell: "if oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} get dc mariadb-{{ item }}; then \
           oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} delete dc mariadb-{{ item }}; \ 
-          while oc get pods -l 'service=mariadb-{{ item }}' | grep STATUS; do sleep 5; done; fi; \
+          while oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} get pods -l 'service=mariadb-{{ item }}' | grep STATUS; \
+          do sleep 5; done; fi; \
           oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb-{{ item }}-dc.yml;"
   args:
     chdir: /tmp/galera/{{ namespace }}
