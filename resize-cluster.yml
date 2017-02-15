@@ -1,5 +1,8 @@
 ---
 #resize cluster
+- name: oc login
+  shell: "oc login {{ server_url }} --token={{ token }} --insecure-skip-tls-verify=true"
+
 - name: initialize cluster host list
   set_fact:
     cs_array: "[]"
