@@ -10,7 +10,8 @@ spec:
       containers:
         - image: "docker.io/jmontleon/centos-7-galera-mariadb-10"
           name: main
-          command: ["/usr/local/bin/bootstrap.sh"]
+          args: 
+            - /usr/local/bin/bootstrap.sh
           user: mysql
           volumeMounts:
             - mountPath: /var/lib/mysql
