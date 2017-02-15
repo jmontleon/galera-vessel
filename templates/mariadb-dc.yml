@@ -48,6 +48,7 @@ spec:
           value: --wsrep-new-cluster
         {% endif -%}
         image: "docker.io/jmontleon/centos-7-galera-mariadb-10"
+        user: mysql
         imagePullPolicy: IfNotPresent
         name: mariadb-{{ item }}
         ports:
