@@ -65,7 +65,7 @@
   register: deployment_configs
 
 - name: delete excess node configs
-  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} delete dc {{ item }} \
-          oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} delete pvc {{ item }}-data \
+  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} delete dc {{ item }}; \
+          oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} delete pvc {{ item }}-data; \
           oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} delete svc {{ item }}"
   with_items: "{{ deployment_configs.stdout_lines | difference(cs_array) }}"
