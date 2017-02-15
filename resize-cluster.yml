@@ -53,8 +53,9 @@
 
 - name: create  or recreate deployment configs
   shell: "if oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} get dc mariadb-{{ item }}; then \
-             oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} delete dc mariadb-{{ item }}; fi; \
-             oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb-{{ item }}-dc.yml; sleep 10"
+          oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} delete dc mariadb-{{ item }}; \ 
+          while oc get pods -l 'service=mariadb-{{ item }}' | grep STATUS; do sleep 5; done; fi; \
+          oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb-{{ item }}-dc.yml;"
   args:
     chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
   with_sequence: count={{ cluster_size }}
