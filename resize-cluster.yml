@@ -61,7 +61,7 @@
 #  with_sequence: count={{ cluster_size }}
 
 - name: get list of deployment configs
-  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} get dc -l "app=galera" | grep ^mariadb | cut -d " " -f 1"
+  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} get dc -l 'app=galera' | grep ^mariadb | cut -d ' ' -f 1"
   register: deployment_configs
 
 - name: echo configs
