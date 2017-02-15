@@ -43,7 +43,7 @@ spec:
           value: {{ cluster_string }}
         - name: WSREP_NODE_NAME
           value: mariadb-{{ item }}
-        {% if "mariadb-"+item == "mariadb-1" -%}
+        {% if "mariadb-"+item == "mariadb-1" and task == "deploy-cluster" -%}
         - name: WSREP_BOOTSTRAP
           value: --wsrep-new-cluster
         {% endif -%}
