@@ -15,8 +15,6 @@ spec:
             - mountPath: /var/lib/mysql
               name: mariadb-persistent-storage
           env:
-            - name: BOOTSTRAP
-              value: ""
             - name: MARIADB_DATABASE
               value: "{{ mariadb_database }}"
             - name: MARIADB_USERNAME
