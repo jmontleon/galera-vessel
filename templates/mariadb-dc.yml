@@ -66,16 +66,16 @@ spec:
         terminationMessagePath: /dev/termination-log
         volumeMounts:
         - mountPath: /var/lib/mysql
-          name: mariadb{{ item }}-data
+          name: mariadb-{{ item }}-data
         workingDir: /
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       securityContext: {}
       terminationGracePeriodSeconds: 30
       volumes:
-      - name: mariadb{{ item }}-data
+      - name: mariadb-{{ item }}-data
         persistentVolumeClaim:
-          claimName: mariadb{{ item }}-data
+          claimName: mariadb-{{ item }}-data
   test: false
   triggers:
   - type: ConfigChange

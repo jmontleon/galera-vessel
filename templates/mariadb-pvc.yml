@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mariadb{{ item }}-data
+  name: mariadb-{{ item }}-data
 spec:
   accessModes:
   - ReadWriteOnce
