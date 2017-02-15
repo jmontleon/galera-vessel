@@ -29,11 +29,7 @@ spec:
     spec:
       containers:
       - args:
-        - /usr/bin/dumb-init
-        - mysqld_safe
-        {% if "mariadb-"+item == "mariadb-1" -%}
-        - --wsrep-new-cluster
-        {% endif -%}
+        - /usr/local/bin/run.sh
         env:
         - name: MARIADB_ROOT_PASSWORD
           value: {{ mariadb_root_password }}
@@ -47,6 +43,10 @@ spec:
           value: {{ cluster_string }}
         - name: WSREP_NODE_NAME
           value: mariadb-{{ item }}
+        {% if "mariadb-"+item == "mariadb-1" -%}
+        - name: WSREP_BOOTSTRAP
+          value: --wsrep-new-cluster
+        {% endif -%}
         image: "docker.io/jmontleon/centos-7-galera-mariadb-10"
         imagePullPolicy: IfNotPresent
         name: mariadb-{{ item }}

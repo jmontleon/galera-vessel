@@ -10,7 +10,7 @@ spec:
       containers:
         - image: "docker.io/jmontleon/centos-7-galera-mariadb-10"
           name: main
-          command: ["/usr/bin/entrypoint.sh"]
+          command: ["/usr/local/bin/bootstrap.sh"]
           user: mysql
           volumeMounts:
             - mountPath: /var/lib/mysql
@@ -26,6 +26,8 @@ spec:
               value: "{{ mariadb_password }}"
             - name: MARIADB_ROOT_PASSWORD
               value: "{{ mariadb_root_password }}"
+            - name: WSREP_BOOTSTRAP
+              value: --wsrep-new-cluster
       volumes:
         - name: mariadb-persistent-storage
           persistentVolumeClaim:
