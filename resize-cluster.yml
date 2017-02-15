@@ -64,6 +64,8 @@
   shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} get dc -l 'app=galera' | grep ^mariadb | cut -d ' ' -f 1"
   register: deployment_configs
 
-- name: echo configs
-  shell: echo items
-  with_items: "{{ deployment_configs.stdout_lines }}"
+- name: delete excess node configs
+  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} delete dc mariadb-{{ item }} \
+          oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} delete pvc mariadb-{{ item }}-data \
+          oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} delete svc mariadb-{{ item }}"
+  with_items: "{{ deployment_configs.stdout_lines | difference(cs_array) }}"
