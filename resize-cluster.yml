@@ -40,7 +40,7 @@
 
 - name: create non-existent services
   shell: "if ! oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} get svc mariadb-{{ item }}; then \
-          oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb-{{ item }}-svc.yml"
+          oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb-{{ item }}-svc.yml; fi"
   args:
     chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
   with_sequence: count={{ cluster_size }}
