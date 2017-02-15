@@ -52,7 +52,9 @@
   with_sequence: count={{ cluster_size }}
 
 - name: create  or recreate deployment configs
-  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb-{{ item }}-dc.yml; sleep 10"
+  shell: "if oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} get dc mariadb-{{ item }}; then \
+          if oc --token={{ token }} --server={{ server_url }} -n {{ namespace }}  delete dc mariadb-{{ item }}; fi \
+          oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb-{{ item }}-dc.yml; sleep 10"
   args:
     chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
   with_sequence: count={{ cluster_size }}
