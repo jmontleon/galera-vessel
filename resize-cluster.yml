@@ -66,4 +66,4 @@
 
 - name: echo configs
   shell: echo items
-  with_items: deployment_configs.stdout_lines
+  with_items: "{{ deployment_configs.stdout_lines }}"
