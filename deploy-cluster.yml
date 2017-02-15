@@ -33,11 +33,11 @@
 - name: create pvc definitions
   template:
     src: templates/mariadb-pvc.yml
-    dest: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}/mariadb{{ item }}-data.yml
+    dest: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}/mariadb-{{ item }}-data.yml
   with_sequence: count={{ cluster_size }}
 
 - name: create pvcs
-  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb{{ item }}-data.yml"
+  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb-{{ item }}-data.yml"
   args:
     chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
   with_sequence: count={{ cluster_size }}
@@ -45,11 +45,11 @@
 - name: create svc definitions
   template:
     src: templates/mariadb-svc.yml
-    dest: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}/mariadb{{ item }}-svc.yml
+    dest: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}/mariadb-{{ item }}-svc.yml
   with_sequence: count={{ cluster_size }}
 
 - name: create services
-  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb{{ item }}-svc.yml"
+  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb-{{ item }}-svc.yml"
   args:
     chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
   with_sequence: count={{ cluster_size }}
@@ -80,7 +80,7 @@
 
 
 #- name: create deployment configs
-#  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb{{ item }}-data.yml"
+#  shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb-{{ item }}-data.yml"
 #  args:
 #    chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
 #  with_sequence: count={{ cluster_size }}
