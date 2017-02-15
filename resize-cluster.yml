@@ -14,41 +14,41 @@
     cluster_string: "{{ cs_array | join(',') }}"
 
 - name: delete directory for cluster ansible-container
-  file: path=/var/lib/ansible-container/galera/resize/{{ namespace }} state=absent
+  file: path=/tmp/galera/{{ namespace }} state=absent
 
 - name: create directory for cluster ansible-container
-  file: path=/var/lib/ansible-container/galera/resize/{{ namespace }} state=directory
+  file: path=/tmp/galera/{{ namespace }} state=directory
 
 - name: create pvc definitions
   template:
     src: templates/mariadb-pvc.yml
-    dest: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}/mariadb-{{ item }}-data.yml
+    dest: /tmp/galera/{{ namespace }}/mariadb-{{ item }}-data.yml
   with_sequence: count={{ cluster_size }}
 
 - name: create non-existent pvcs
   shell: "if ! oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} get pvc mariadb-{{ item }}-data; then \
           oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb-{{ item }}-data.yml; fi"
   args:
-    chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
+    chdir: /tmp/galera/{{ namespace }}
   with_sequence: count={{ cluster_size }}
 
 - name: create svc definitions
   template:
     src: templates/mariadb-svc.yml
-    dest: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}/mariadb-{{ item }}-svc.yml
+    dest: /tmp/galera/{{ namespace }}/mariadb-{{ item }}-svc.yml
   with_sequence: count={{ cluster_size }}
 
 - name: create non-existent services
   shell: "if ! oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} get svc mariadb-{{ item }}; then \
           oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb-{{ item }}-svc.yml; fi"
   args:
-    chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
+    chdir: /tmp/galera/{{ namespace }}
   with_sequence: count={{ cluster_size }}
 
 - name: create dc definitions
   template:
     src: templates/mariadb-dc.yml
-    dest: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}/mariadb-{{ item }}-dc.yml
+    dest: /tmp/galera/{{ namespace }}/mariadb-{{ item }}-dc.yml
   with_sequence: count={{ cluster_size }}
 
 - name: create or recreate deployment configs
@@ -57,7 +57,7 @@
           while oc get pods -l 'service=mariadb-{{ item }}' | grep STATUS; do sleep 5; done; fi; \
           oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb-{{ item }}-dc.yml;"
   args:
-    chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
+    chdir: /tmp/galera/{{ namespace }}
   with_sequence: count={{ cluster_size }}
 
 - name: get list of deployment configs

@@ -6,10 +6,13 @@ To deploy a galera cluster:
 
 * docker build vessel
 * docker tag resulting-id galera-vessel
-* docker run -v /var/lib/ansible-container:/var/lib/ansible-container -v /var/run/docker.sock:/var/run/docker.sock --privileged -t -e TOKEN=$(oc whoami -t) -e TASK=deploy-cluster -e CLUSTER_SIZE=3 galera-vessel
+* docker run -t -e TOKEN=$(oc whoami -t) -e TASK=deploy-cluster -e CLUSTER_SIZE=3 galera-vessel
 
-To grow your existing galera cluster:
-* docker run -v /var/lib/ansible-container:/var/lib/ansible-container -v /var/run/docker.sock:/var/run/docker.sock --privileged -t -e TOKEN=$(oc whoami -t) -e TASK=grow-cluster -e CLUSTER_SIZE=5 galera-vessel
+To grow your existing 3 container galera cluster:
+* docker run -t -e TOKEN=$(oc whoami -t) -e TASK=resize-cluster -e CLUSTER_SIZE=5 galera-vessel
+
+Now to shrink your 5 container galera cluster:
+* docker run -t -e TOKEN=$(oc whoami -t) -e TASK=resize-cluster -e CLUSTER_SIZE=4 galera-vessel
 
 To destroy the cluster - Use with caution. Right now this deletes the entire namesapce. Very overly destructive and WIP
 * docker run -v /var/lib/ansible-container:/var/lib/ansible-container -v /var/run/docker.sock:/var/run/docker.sock --privileged -t -e TOKEN=$(oc whoami -t) -e TASK=destroy-cluster galera-vessel

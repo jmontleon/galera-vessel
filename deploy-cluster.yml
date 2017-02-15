@@ -4,10 +4,10 @@
   shell: "oc login {{ server_url }} --token={{ token }} --insecure-skip-tls-verify=true"
 
 - name: delete directory for bootstrap ansible-container
-  file: path=/var/lib/ansible-container/galera/bootstrap/{{ namespace }} state=absent
+  file: path=/tmp/galera/{{ namespace }} state=absent
 
 - name: create directory for boostrap ansible-cluster_size
-  file: path=/var/lib/ansible-container/galera/bootstrap/{{ namespace }} state=directory
+  file: path=/tmp/galera/{{ namespace }} state=directory
 
 - name: initialize cluster host list 
   set_fact:
@@ -33,42 +33,42 @@
 - name: create pvc definitions
   template:
     src: templates/mariadb-pvc.yml
-    dest: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}/mariadb-{{ item }}-data.yml
+    dest: /tmp/galera/{{ namespace }}/mariadb-{{ item }}-data.yml
   with_sequence: count={{ cluster_size }}
 
 - name: create pvcs
   shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb-{{ item }}-data.yml"
   args:
-    chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
+    chdir: /tmp/galera/{{ namespace }}
   with_sequence: count={{ cluster_size }}
 
 - name: create svc definitions
   template:
     src: templates/mariadb-svc.yml
-    dest: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}/mariadb-{{ item }}-svc.yml
+    dest: /tmp/galera/{{ namespace }}/mariadb-{{ item }}-svc.yml
   with_sequence: count={{ cluster_size }}
 
 - name: create services
   shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb-{{ item }}-svc.yml"
   args:
-    chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
+    chdir: /tmp/galera/{{ namespace }}
   with_sequence: count={{ cluster_size }}
 
 - name: create dc definitions
   template:
     src: templates/mariadb-dc.yml
-    dest: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}/mariadb-{{ item }}-dc.yml
+    dest: /tmp/galera/{{ namespace }}/mariadb-{{ item }}-dc.yml
   with_sequence: count={{ cluster_size }}
 
 - name: create boostrap job definition
   template:
-    src: templates/bootstrap-job.j2 
-    dest: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}/bootstrap-job.yml
+    src: templates-job.j2 
+    dest: /tmp/galera/{{ namespace }}-job.yml
 
 - name: create bootstrap job
   shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f bootstrap-job.yml"
   args:
-    chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
+    chdir: /tmp/galera/{{ namespace }}
 
 - name: wait for boostrap to complete
   shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} get pods | grep mariadb-bootstrap"
@@ -80,6 +80,6 @@
 - name: create deployment configs
   shell: "oc --token={{ token }} --server={{ server_url }} -n {{ namespace }} create -f mariadb-{{ item }}-dc.yml"
   args:
-    chdir: /var/lib/ansible-container/galera/bootstrap/{{ namespace }}
+    chdir: /tmp/galera/{{ namespace }}
   with_sequence: count={{ cluster_size }}
 
